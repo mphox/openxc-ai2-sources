@@ -7,13 +7,22 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.util.Log;
 
+import com.openxc.NoValueException;
+import com.openxc.VehicleManager;
+import com.openxc.measurements.FuelLevel;
+import com.openxc.measurements.IgnitionStatus;
+import com.openxc.measurements.Measurement;
+import com.openxc.measurements.TransmissionGearPosition;
+import com.openxc.measurements.UnrecognizedMeasurementTypeException;
+import com.openxc.remote.VehicleServiceException;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -35,10 +44,18 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     iconName = "images/openxc.png")
 
 @SimpleObject
+@UsesLibraries(libraries = "openxc.jar")
 public class OpenXC extends AndroidNonvisibleComponent
 implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListener, Deleteable {
-  private static final String TAG = "nearfield";
+  private static final String TAG = "OPENXC";
   private Activity activity;
+
+  private IgnitionStatus.Listener mIgnitionStatusListener = new IgnitionStatus.Listener() {
+    @Override
+    public void receive(Measurement measurement) {
+      Log.d(TAG, "received Ignition Status:" + measurement); 
+    }
+  };
 
    /**
    * Creates a new OpenXC component
@@ -53,7 +70,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     form.registerForOnResume(this);
     form.registerForOnNewIntent(this);
     form.registerForOnPause(this);
-    Log.d(TAG, "OpenXC component created");
+    Log.d(TAG, "component created");
   }
 
     @Override
