@@ -152,6 +152,12 @@ public interface Images extends Resources {
   ImageResource orientationsensor();
 
   /**
+   * Designer palette item: openxc component
+   */
+  @Source("com/google/appinventor/images/openxc.png")
+  ImageResource openxc();
+
+  /**
    * Designer palette item: player component
    */
   @Source("com/google/appinventor/images/player.png")

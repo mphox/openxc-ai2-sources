@@ -520,6 +520,9 @@ public class YaVersion {
   // - The yaw parameter to OrientationChanged was renamed to azimuth.
   public static final int ORIENTATIONSENSOR_COMPONENT_VERSION = 2;
 
+  // For OPENXC_COMPONENT_VERSION 1:
+  public static final int OPENXC_COMPONENT_VERSION = 1;
+
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 2;
