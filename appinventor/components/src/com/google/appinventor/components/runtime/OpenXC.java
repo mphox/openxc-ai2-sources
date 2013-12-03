@@ -50,12 +50,31 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
   private static final String TAG = "OPENXC";
   private Activity activity;
 
-  private IgnitionStatus.Listener mIgnitionStatusListener = new IgnitionStatus.Listener() {
+
+  private String ignitionStatus;
+  private IgnitionStatus.IgnitionPosition mIgnitionStatus;
+
+  private String transmissionGearPosition;
+  private TransmissionGearPosition.GearPosition mGearPosition;
+
+
+
+
+  private IgnitionStatus.Listener mIgnitionStatusListener  = new IgnitionStatus.Listener() {
     @Override
     public void receive(Measurement measurement) {
-      Log.d(TAG, "received Ignition Status:" + measurement); 
-    }
+      Log.d(TAG, "received Ignition Status:" + (IgnitionStatus) measurement); 
+      //setTransmissionGearPosition()
+    };
   };
+
+  private TransmissionGearPosition.Listener mTransmissionGearListener = new TransmissionGearPosition.Listener() {
+    @Override
+    public void receive(Measurement measurement) {
+      Log.d(TAG, "received Transmission Gear Position:" + (TransmissionGearPosition) measurement); 
+    };
+  };
+  
 
    /**
    * Creates a new OpenXC component
@@ -65,6 +84,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     super(container.$form());
     activity = container.$context();
     
+    
     // register with the forms to that OnResume and OnNewIntent
     // messages get sent to this component
     form.registerForOnResume(this);
@@ -73,7 +93,38 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     Log.d(TAG, "component created");
   }
 
-    @Override
+  /**
+  * Return the ignition position.
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String IgnitionStatus() {
+    Log.d(TAG, "String message method stared");
+    return ignitionStatus;
+  }
+
+  /**
+  * Return the transmission
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String TransmissionGearPosition() {
+    Log.d(TAG, "String message method stared");
+    return transmissionGearPosition;
+  }
+
+  @SimpleEvent
+  public void TransmissionGearPositionChanged() {
+    Log.d(TAG, "String message method stared");
+    EventDispatcher.dispatchEvent(this, "TrnsmissionGearPositionChanged");
+  }
+
+  @SimpleEvent
+  public void IgnitionStatusChanged() {
+    Log.d(TAG, "String message method stared");
+    EventDispatcher.dispatchEvent(this, "IgnitionStatusChanged");
+  }
+
+
+  @Override
   public void onNewIntent(Intent intent) {
     // TODO Auto-generated method stub
   }
