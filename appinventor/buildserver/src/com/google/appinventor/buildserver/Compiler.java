@@ -426,7 +426,7 @@ public final class Compiler {
       //OpenXC Activity
 
       out.write("    <activity \n");
-      out.write("      android:name=\"com.openxc.openxcstarter.StarterActivity\" \n");
+      out.write("      android:name=\"com.openxc.openxcstarter.StarterActivity\"> \n");
       out.write("      <intent-filter> \n");
       out.write("        <action android:name=\"android.intent.action.MAIN\" /> \n");
       out.write("        <category android:name=\"android.intent.category.LAUNCHER\" /> \n");

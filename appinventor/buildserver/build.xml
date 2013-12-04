@@ -143,6 +143,10 @@
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
     <copy toFile="${classes.files.dir}/openxc.jar" file="${lib.dir}/openxc/openxc.jar" />
+    <copy toFile="${classes.files.dir}/compatibility-v13-18.jar" file="${lib.dir}/openxc/compatibility-v13-18.jar"/>
+<!--     <copy toFile="${classes.files.dir}/guava-15.0.jar" file="${lib.dir}/openxc/guava-15.0.jar"/> -->
+    <copy toFile="${classes.files.dir}/jackson-core-2.2.3.jar" file="${lib.dir}/openxc/jackson-core-2.2.3.jar"/>
+    <copy toFile="${classes.files.dir}/protobuf-java-2.5.0.jar" file="${lib.dir}/openxc/protobuf-java-2.5.0.jar"/>
 
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">

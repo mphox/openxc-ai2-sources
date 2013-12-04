@@ -45,15 +45,15 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     iconName = "images/openxc.png")
 
 @SimpleObject
-@UsesLibraries(libraries = "openxc.jar")
+@UsesLibraries(libraries = "openxc.jar," + "compatibility-v13-18.jar," + "guava-14.0.1.jar," + "jackson-core-2.2.3.jar," + "protobuf-java-2.5.0.jar")
 public class OpenXC extends AndroidNonvisibleComponent
-implements OnResumeListener, Deleteable {
+implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   private static final String TAG = "OPENXC";
   private Activity activity;
 
   private VehicleManager mVehicleManager;
 
-  private String ignitionStatus;
+  private String ignitionStatus = "NO READING";
   private IgnitionStatus.IgnitionPosition mIgnitionStatus;
 
   private String transmissionGearPosition;
@@ -88,28 +88,29 @@ implements OnResumeListener, Deleteable {
     public void receive(Measurement measurement) {
       final IgnitionStatus status = (IgnitionStatus) measurement;
       final IgnitionStatus.IgnitionPosition statusEnum = status.getValue().enumValue();
-      final String oldStatus = ignitionStatus;
+      String newStatus = "";
       
       Log.d(TAG, "Received Ignition Status:" + status); 
 
       switch(statusEnum) {
         case ACCESSORY:
-          ignitionStatus = "ACCESSORY";
+          newStatus = "ACCESSORY";
           break;
         case OFF:
-          ignitionStatus = "OFF";
+          newStatus = "OFF";
           break;
         case RUN:
-          ignitionStatus = "RUN";
+          newStatus = "RUN";
           break;
         case START:
-          ignitionStatus = "START";
+          newStatus = "START";
           break;
         default:
           break;
       } 
 
-      if (!ignitionStatus.equals(oldStatus)) {
+      if (!ignitionStatus.equals(newStatus)) {
+        ignitionStatus = newStatus;
         IgnitionStatusChanged();
       } 
     };
@@ -141,6 +142,16 @@ implements OnResumeListener, Deleteable {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String IgnitionStatus() {
     Log.d(TAG, "String message method stared");
+
+    if(mVehicleManager == null) {
+      Intent intent = new Intent(activity, VehicleManager.class);
+      activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    if (mVehicleManager == null) {
+      return "Should not happen";
+    }
+
     return ignitionStatus;
   }
 
@@ -171,12 +182,11 @@ implements OnResumeListener, Deleteable {
     // TODO Auto-generated method stub
   }
 
-
-
   @Override
   public void onPause() {
     // TODO Auto-generated method stub
   }
+
   @Override
   public void onResume() {
     // When the activity starts up or returns from the background,
