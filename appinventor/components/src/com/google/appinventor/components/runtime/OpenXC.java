@@ -142,17 +142,6 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String IgnitionStatus() {
     Log.d(TAG, "String message method stared");
-
-    /*
-    if(mVehicleManager == null) {
-      Intent intent = new Intent(activity, VehicleManager.class);
-      activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    if (mVehicleManager == null) {
-      return "Should not happen";
-    }
-*/
     return ignitionStatus;
   }
 
@@ -173,8 +162,8 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
 
   @SimpleEvent
   public void IgnitionStatusChanged() {
-    Log.d(TAG, "String message method stared");
-    EventDispatcher.dispatchEvent(this, "IgnitionStatusChanged");
+    Log.d(TAG, "IGNITION");
+    //EventDispatcher.dispatchEvent(this, "IgnitionStatusChanged");
   }
 
 
