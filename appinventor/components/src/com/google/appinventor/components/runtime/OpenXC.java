@@ -17,6 +17,7 @@ import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
+import com.openxc.measurements.VehicleSpeed;
 import com.openxc.remote.VehicleServiceException;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -113,9 +114,11 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
           break;
       } 
 
+      IgnitionStatusChanged();
+
       if (!ignitionStatus.equals(newStatus)) {
         ignitionStatus = newStatus;
-        IgnitionStatusChanged();
+        // IgnitionStatusChanged();
       } 
     };
   };
@@ -132,7 +135,7 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
       public void receive(Measurement measurement) {
         Log.d(TAG, "received vehicle speed:" + ((VehicleSpeed) measurement).getValue().doubleValue()); 
         mVehicleSpeed = (VehicleSpeed) measurement;
-        speed = mVehicleSpeed.getValue().doubleValue();
+        speed = String.valueOf(mVehicleSpeed.getValue().doubleValue());
         VehicleSpeedChanged();
       };
     };
@@ -191,7 +194,7 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   @SimpleEvent
   public void VehicleSpeedChanged() {
     Log.d(TAG, "String message method stared");
-    EventDispatcher.dispatchEvent(this, "VehicleSpeedChanged");
+    //EventDispatcher.dispatchEvent(this, "VehicleSpeedChanged");
   }
 
 
