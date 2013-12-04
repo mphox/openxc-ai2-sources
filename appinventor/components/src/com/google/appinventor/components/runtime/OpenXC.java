@@ -149,6 +149,8 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     activity = container.$context();
     
     form.registerForOnResume(this);
+    form.registerForOnPause(this); 
+    form.registerForOnNewIntent(this);     
     Log.d(TAG, "component created");
   }
 
@@ -181,32 +183,50 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   
   @SimpleEvent
   public void TransmissionGearPositionChanged() {
-    Log.d(TAG, "String message method stared");
-    EventDispatcher.dispatchEvent(this, "TransmissionGearPositionChanged");
+    final Component comp = this;
+    Log.d(TAG, "GEAR POSITION");
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        Log.d(TAG, "EVENT DISPATCHER");
+        EventDispatcher.dispatchEvent(comp, "TransmissionGearPositionChanged");
+      }
+    });
   }
 
   @SimpleEvent
   public void IgnitionStatusChanged() {
+    final Component comp = this;
     Log.d(TAG, "IGNITION");
-    //EventDispatcher.dispatchEvent(this, "IgnitionStatusChanged");
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        Log.d(TAG, "EVENT DISPATCHER");
+        EventDispatcher.dispatchEvent(comp, "IgnitionStatusChanged");
+      }
+    });
   }
   
   @SimpleEvent
   public void VehicleSpeedChanged() {
-    Log.d(TAG, "String message method stared");
-    //EventDispatcher.dispatchEvent(this, "VehicleSpeedChanged");
+    final Component comp = this;
+    Log.d(TAG, "SPEED");
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        Log.d(TAG, "EVENT DISPATCHER");
+        EventDispatcher.dispatchEvent(comp, "VehicleSpeedChanged");
+      }
+    });
   }
-
-
 
   @Override
   public void onNewIntent(Intent intent) {
-    // TODO Auto-generated method stub
+    Log.d(TAG, "NEW INTENT");
+    activity.unbindService(mConnection);
   }
 
   @Override
   public void onPause() {
-    // TODO Auto-generated method stub
+    Log.d(TAG, "PAUSE");
+    //activity.unbindService(mConnection);
   }
 
   @Override
@@ -214,13 +234,14 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     // When the activity starts up or returns from the background,
     // re-connect to the VehicleManager so we can receive updates.
     if(mVehicleManager == null) {
-        Intent intent = new Intent(activity, VehicleManager.class);
-        activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+      Intent intent = new Intent(activity, VehicleManager.class);
+      activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
   }
 
   @Override
   public void onDelete() {
-    
+    Log.d(TAG, "DELETE");
+    activity.unbindService(mConnection);
   }
 }
