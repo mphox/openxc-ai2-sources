@@ -59,6 +59,9 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   private String transmissionGearPosition;
   private TransmissionGearPosition.GearPosition mGearPosition;
 
+  private String speed = "NO READING";
+  private VehicleSpeed mVehicleSpeed;
+  
   private ServiceConnection mConnection = new ServiceConnection() {
     // When the VehicleManager starts up, we store a reference to it
     public void onServiceConnected(ComponentName className, IBinder service) {
@@ -69,6 +72,7 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
             // Bind all of the listeners to the vehicleManager
             mVehicleManager.addListener(IgnitionStatus.class, mIgnitionStatusListener);
             mVehicleManager.addListener(TransmissionGearPosition.class, mTransmissionGearListener);
+            mVehicleManager.addListener(VehicleSpeed.class, mSpeedListener);
         } catch (VehicleServiceException e) {
             e.printStackTrace();
         } catch (UnrecognizedMeasurementTypeException e) {
@@ -123,6 +127,15 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     };
   };
   
+  private VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
+      @Override
+      public void receive(Measurement measurement) {
+        Log.d(TAG, "received vehicle speed:" + ((VehicleSpeed) measurement).getValue().doubleValue()); 
+        mVehicleSpeed = (VehicleSpeed) measurement;
+        speed = mVehicleSpeed.getValue().doubleValue();
+        VehicleSpeedChanged();
+      };
+    };
 
    /**
    * Creates a new OpenXC component
@@ -165,10 +178,19 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     return transmissionGearPosition;
   }
 
+  /**
+  * Return the speed
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String VehicleSpeed() {
+    Log.d(TAG, "String message method stared");
+    return speed;
+  }
+  
   @SimpleEvent
   public void TransmissionGearPositionChanged() {
     Log.d(TAG, "String message method stared");
-    EventDispatcher.dispatchEvent(this, "TrnsmissionGearPositionChanged");
+    EventDispatcher.dispatchEvent(this, "TransmissionGearPositionChanged");
   }
 
   @SimpleEvent
@@ -176,6 +198,13 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     Log.d(TAG, "String message method stared");
     EventDispatcher.dispatchEvent(this, "IgnitionStatusChanged");
   }
+  
+  @SimpleEvent
+  public void VehicleSpeedChanged() {
+    Log.d(TAG, "String message method stared");
+    EventDispatcher.dispatchEvent(this, "VehicleSpeedChanged");
+  }
+
 
 
   @Override
