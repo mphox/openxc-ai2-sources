@@ -423,6 +423,16 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
+      //OpenXC Activity
+
+      out.write("    <activity \n");
+      out.write("      android:name=\"com.openxc.openxcstarter.StarterActivity\" \n");
+      out.write("      <intent-filter> \n");
+      out.write("        <action android:name=\"android.intent.action.MAIN\" /> \n");
+      out.write("        <category android:name=\"android.intent.category.LAUNCHER\" /> \n");
+      out.write("      </intent-filter> \n");
+      out.write("    </activity> \n");
+      out.write("    <service android:name=\"com.openxc.VehicleManager\"/> \n");
       // ListPickerActivity
       out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +
           "android:configChanges=\"orientation|keyboardHidden\" " +

@@ -129,14 +129,10 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
     // TODO Auto-generated method stub
   }
 
-  // TODO: Re-enable NFC communication if it had been disabled
   @Override
   public void onResume() {
     // TODO Auto-generated method stub
   }
-
-  // TODO: Disable NFC communication in onPause and onDelete
-  // and restore it in onResume
 
   public void onPause() {
     // TODO Auto-generated method stub
