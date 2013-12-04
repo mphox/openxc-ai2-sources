@@ -143,6 +143,7 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   public String IgnitionStatus() {
     Log.d(TAG, "String message method stared");
 
+    /*
     if(mVehicleManager == null) {
       Intent intent = new Intent(activity, VehicleManager.class);
       activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -151,7 +152,7 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     if (mVehicleManager == null) {
       return "Should not happen";
     }
-
+*/
     return ignitionStatus;
   }
 
