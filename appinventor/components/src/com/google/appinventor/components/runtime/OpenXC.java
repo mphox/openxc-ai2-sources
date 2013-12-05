@@ -32,6 +32,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 
 /**
  * Controller for OpenXC Component
@@ -48,7 +49,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 @SimpleObject
 @UsesLibraries(libraries = "openxc.jar," + "compatibility-v13-18.jar," + "guava-14.0.1.jar," + "jackson-core-2.2.3.jar," + "protobuf-java-2.5.0.jar")
 public class OpenXC extends AndroidNonvisibleComponent
-implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
+implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   private static final String TAG = "OPENXC";
   private Activity activity;
 
@@ -94,8 +95,6 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
       final IgnitionStatus status = (IgnitionStatus) measurement;
       final IgnitionStatus.IgnitionPosition statusEnum = status.getValue().enumValue();
       String newStatus = "";
-      
-      Log.d(TAG, "Received Ignition Status:" + status); 
 
       switch(statusEnum) {
         case ACCESSORY:
@@ -114,11 +113,9 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
           break;
       } 
 
-      IgnitionStatusChanged();
-
       if (!ignitionStatus.equals(newStatus)) {
         ignitionStatus = newStatus;
-        // IgnitionStatusChanged();
+        IgnitionStatusChanged();
       } 
     };
   };
@@ -126,14 +123,12 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   private TransmissionGearPosition.Listener mTransmissionGearListener = new TransmissionGearPosition.Listener() {
     @Override
     public void receive(Measurement measurement) {
-      Log.d(TAG, "received Transmission Gear Position:" + (TransmissionGearPosition) measurement); 
     };
   };
   
   private VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
       @Override
       public void receive(Measurement measurement) {
-        Log.d(TAG, "received vehicle speed:" + ((VehicleSpeed) measurement).getValue().doubleValue()); 
         mVehicleSpeed = (VehicleSpeed) measurement;
         speed = String.valueOf(mVehicleSpeed.getValue().doubleValue());
         VehicleSpeedChanged();
@@ -150,16 +145,16 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
     
     form.registerForOnResume(this);
     form.registerForOnPause(this); 
-    form.registerForOnNewIntent(this);     
-    Log.d(TAG, "component created");
+    form.registerForOnNewIntent(this); 
+    form.registerForOnInitialize(this);     
+    Log.d(TAG, "OpenXC component created");
   }
 
   /**
   * Return the ignition position.
   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-  public String IgnitionStatus() {
-    Log.d(TAG, "String message method stared");
+  public String IgnitionStatus() {;
     return ignitionStatus;
   }
 
@@ -168,7 +163,6 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String TransmissionGearPosition() {
-    Log.d(TAG, "String message method stared");
     return transmissionGearPosition;
   }
 
@@ -177,17 +171,14 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String VehicleSpeed() {
-    Log.d(TAG, "String message method stared");
     return speed;
   }
   
   @SimpleEvent
   public void TransmissionGearPositionChanged() {
     final Component comp = this;
-    Log.d(TAG, "GEAR POSITION");
     activity.runOnUiThread(new Runnable() {
       public void run() {
-        Log.d(TAG, "EVENT DISPATCHER");
         EventDispatcher.dispatchEvent(comp, "TransmissionGearPositionChanged");
       }
     });
@@ -196,10 +187,8 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   @SimpleEvent
   public void IgnitionStatusChanged() {
     final Component comp = this;
-    Log.d(TAG, "IGNITION");
     activity.runOnUiThread(new Runnable() {
       public void run() {
-        Log.d(TAG, "EVENT DISPATCHER");
         EventDispatcher.dispatchEvent(comp, "IgnitionStatusChanged");
       }
     });
@@ -208,10 +197,8 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
   @SimpleEvent
   public void VehicleSpeedChanged() {
     final Component comp = this;
-    Log.d(TAG, "SPEED");
     activity.runOnUiThread(new Runnable() {
       public void run() {
-        Log.d(TAG, "EVENT DISPATCHER");
         EventDispatcher.dispatchEvent(comp, "VehicleSpeedChanged");
       }
     });
@@ -219,19 +206,25 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
 
   @Override
   public void onNewIntent(Intent intent) {
-    Log.d(TAG, "NEW INTENT");
-    activity.unbindService(mConnection);
   }
 
   @Override
   public void onPause() {
-    Log.d(TAG, "PAUSE");
-    //activity.unbindService(mConnection);
   }
 
   @Override
   public void onResume() {
-    // When the activity starts up or returns from the background,
+    // When the activity returns from the background,
+    // re-connect to the VehicleManager so we can receive updates.
+    if(mVehicleManager == null) {
+      Intent intent = new Intent(activity, VehicleManager.class);
+      activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+  }
+
+  @Override
+  public void onInitialize() {
+    // When the activity starts up,
     // re-connect to the VehicleManager so we can receive updates.
     if(mVehicleManager == null) {
       Intent intent = new Intent(activity, VehicleManager.class);
@@ -241,7 +234,6 @@ implements OnNewIntentListener, OnPauseListener, OnResumeListener, Deleteable {
 
   @Override
   public void onDelete() {
-    Log.d(TAG, "DELETE");
     activity.unbindService(mConnection);
   }
 }
