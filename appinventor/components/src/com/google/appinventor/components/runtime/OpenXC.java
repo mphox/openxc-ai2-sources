@@ -58,11 +58,18 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   private String ignitionStatus = "NO READING";
   private IgnitionStatus.IgnitionPosition mIgnitionStatus;
 
-  private String transmissionGearPosition;
+  private String transmissionGearPosition = "NO READING";
   private TransmissionGearPosition.GearPosition mGearPosition;
 
   private String speed = "NO READING";
   private VehicleSpeed mVehicleSpeed;
+
+  private Boolean driverDoorOpen = false;
+  private Boolean passengerDoorOpen = false;
+  private Boolean rearLeftDoorOpen = false;
+  private Boolean rearRightDoorOpen = false;
+
+
   
   private ServiceConnection mConnection = new ServiceConnection() {
     // When the VehicleManager starts up, we store a reference to it
@@ -123,6 +130,48 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   private TransmissionGearPosition.Listener mTransmissionGearListener = new TransmissionGearPosition.Listener() {
     @Override
     public void receive(Measurement measurement) {
+      final TransmissionGearPosition status = (TransmissionGearPosition) measurement;
+      final TransmissionGearPosition.GearPosition statusEnum = status.getValue().enumValue();
+      String newStatus = "";
+
+      switch(statusEnum) {
+        case REVERSE:
+          newStatus = "REVERSE";
+          break;
+        case NEUTRAL:
+          newStatus = "NEUTRAL";
+          break;
+        case FIRST:
+          newStatus = "FIRST";
+          break;
+        case SECOND:
+          newStatus = "SECOND";
+          break;
+        case THIRD:
+          newStatus = "THIRD";
+          break;
+        case FOURTH:
+          newStatus = "FOURTH";
+          break;
+        case FIFTH:
+          newStatus = "FIFTH";
+          break;
+        case SIXTH:
+          newStatus = "SIXTH";
+          break;
+        case SEVENTH:
+          newStatus = "SEVENTH";
+          break;
+        case EIGHTH:
+          newStatus = "EIGHTH";
+          break;
+        default:
+          break;
+      }
+      if (!transmissionGearPosition.equals(newStatus)) {
+        transmissionGearPosition = newStatus;
+        TransmissionGearPositionChanged();
+      }
     };
   };
   
@@ -135,6 +184,34 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
       };
     };
 
+/*
+  private VehicleDoorStatus.Listener mDoorListener = new VehicleDoorStatus.Listener() {
+      @Override
+      public void receive(Measurement measurement) {
+        mDoorStatus = (VehicleDoorStatus) measurement;
+        mDoorStatusEnum = mDoorStatus.getValue().enumValue();
+
+        switch(mDoorStatusEnum) {
+        case DRIVER:
+          newStatus = "REVERSE";
+          break;
+        case PASSENGER:
+          newStatus = "NEUTRAL";
+          break;
+        case REAR_LEFT:
+          newStatus = "FIRST";
+          break;
+        case REAR_RIGHT:
+          newStatus = "SECOND";
+          break;
+        default:
+          break;
+      }
+      };
+  }
+
+  */
+  
    /**
    * Creates a new OpenXC component
    * @param container  ignored (because this is a non-visible component)
