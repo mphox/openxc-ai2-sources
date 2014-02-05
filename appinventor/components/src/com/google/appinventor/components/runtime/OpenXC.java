@@ -57,8 +57,6 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   private VehicleManager mVehicleManager;
 
   private String ignitionStatus = "NO READING";
-  private IgnitionStatus.IgnitionPosition mIgnitionStatus;
-
   private String transmissionGearPosition = "NO READING";
   private TransmissionGearPosition.GearPosition mGearPosition;
 
@@ -72,7 +70,6 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   //private Boolean anyDoorOpen = false;
 
 
-  
   private ServiceConnection mConnection = new ServiceConnection() {
     // When the VehicleManager starts up, we store a reference to it
     public void onServiceConnected(ComponentName className, IBinder service) {
@@ -121,12 +118,12 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
           break;
         default:
           break;
-      } 
+      }
 
       if (!ignitionStatus.equals(newStatus)) {
         ignitionStatus = newStatus;
         IgnitionStatusChanged();
-      } 
+      }
     };
   };
 
@@ -177,16 +174,6 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
       }
     };
   };
-  
-  private VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
-      @Override
-      public void receive(Measurement measurement) {
-        mVehicleSpeed = (VehicleSpeed) measurement;
-        speed = String.valueOf(mVehicleSpeed.getValue().doubleValue());
-        VehicleSpeedChanged();
-      };
-    };
-
 
   private VehicleDoorStatus.Listener mDoorListener = new VehicleDoorStatus.Listener() {
     @Override
@@ -255,6 +242,19 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
 
   
   
+  private VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
+      @Override
+      public void receive(Measurement measurement) {
+        final VehicleSpeed m = (VehicleSpeed) measurement;
+        String newStatus = String.valueOf(m.getValue().doubleValue());
+
+        if (!vehicleSpeed.equals(newStatus)) {
+          vehicleSpeed = newStatus;
+          VehicleSpeedChanged();
+        }
+      };
+    };
+
    /**
    * Creates a new OpenXC component
    * @param container  ignored (because this is a non-visible component)
@@ -262,11 +262,11 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   public OpenXC(ComponentContainer container) {
     super(container.$form());
     activity = container.$context();
-    
+
     form.registerForOnResume(this);
-    form.registerForOnPause(this); 
-    form.registerForOnNewIntent(this); 
-    form.registerForOnInitialize(this);     
+    form.registerForOnPause(this);
+    form.registerForOnNewIntent(this);
+    form.registerForOnInitialize(this);
     Log.d(TAG, "OpenXC component created");
   }
 
@@ -291,8 +291,9 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String VehicleSpeed() {
-    return speed;
+    return vehicleSpeed;
   }
+
 
   /**
   * Return true if the driver door is open
@@ -326,7 +327,6 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
     return rearLeftDoorOpen;
   }
   
-  
   @SimpleEvent
   public void TransmissionGearPositionChanged() {
     final Component comp = this;
@@ -346,7 +346,7 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
       }
     });
   }
-  
+
   @SimpleEvent
   public void VehicleSpeedChanged() {
     final Component comp = this;

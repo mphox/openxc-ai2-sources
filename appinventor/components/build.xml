@@ -132,10 +132,9 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
         <pathelement location="${lib.dir}/openxc/openxc.jar" />
-        <pathelement location="${lib.dir}/openxc/compatibility-v13-18.jar" />
-<!--         <pathelement location="${lib.dir}/openxc/guava-15.0.jar" /> -->
-        <pathelement location="${lib.dir}/openxc/jackson-core-2.2.3.jar" />
-        <pathelement location="${lib.dir}/openxc/protobuf-java-2.5.0.jar" />
+        <pathelement location="${lib.dir}/compatibility/compatibility-v13-18.jar" />
+        <pathelement location="${lib.dir}/jackson/jackson-core-2.2.3.jar" />
+        <pathelement location="${lib.dir}/protobuf/protobuf-java-2.5.0.jar" />
       </classpath>
     </ai.javac5>
 
@@ -235,10 +234,9 @@
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/openxc/openxc.jar" />
-          <pathelement location="${lib.dir}/openxc/compatibility-v13-18.jar" />
-<!--           <pathelement location="${lib.dir}/openxc/guava-15.0.jar" /> -->
-          <pathelement location="${lib.dir}/openxc/jackson-core-2.2.3.jar" />
-          <pathelement location="${lib.dir}/openxc/protobuf-java-2.5.0.jar" />
+          <pathelement location="${lib.dir}/compatibility/compatibility-v13-18.jar" />
+          <pathelement location="${lib.dir}/jackson/jackson-core-2.2.3.jar" />
+          <pathelement location="${lib.dir}/protobuf/protobuf-java-2.5.0.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
