@@ -18,6 +18,7 @@ import com.openxc.measurements.Measurement;
 import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleSpeed;
+import com.openxc.measurements.VehicleDoorStatus;
 import com.openxc.remote.VehicleServiceException;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -68,6 +69,7 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   private Boolean passengerDoorOpen = false;
   private Boolean rearLeftDoorOpen = false;
   private Boolean rearRightDoorOpen = false;
+  //private Boolean anyDoorOpen = false;
 
 
   
@@ -82,6 +84,7 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
             mVehicleManager.addListener(IgnitionStatus.class, mIgnitionStatusListener);
             mVehicleManager.addListener(TransmissionGearPosition.class, mTransmissionGearListener);
             mVehicleManager.addListener(VehicleSpeed.class, mSpeedListener);
+            mVehicleManager.addListener(VehicleDoorStatus.class, mDoorListener);
         } catch (VehicleServiceException e) {
             e.printStackTrace();
         } catch (UnrecognizedMeasurementTypeException e) {
@@ -184,33 +187,73 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
       };
     };
 
-/*
+
   private VehicleDoorStatus.Listener mDoorListener = new VehicleDoorStatus.Listener() {
-      @Override
-      public void receive(Measurement measurement) {
-        mDoorStatus = (VehicleDoorStatus) measurement;
-        mDoorStatusEnum = mDoorStatus.getValue().enumValue();
+    @Override
+    public void receive(Measurement measurement) {
+      final VehicleDoorStatus mDoorStatus = (VehicleDoorStatus) measurement;
+      //
+      final VehicleDoorStatus.DoorId mDoorId = mDoorStatus.getValue().enumValue();
 
-        switch(mDoorStatusEnum) {
-        case DRIVER:
-          newStatus = "REVERSE";
-          break;
-        case PASSENGER:
-          newStatus = "NEUTRAL";
-          break;
-        case REAR_LEFT:
-          newStatus = "FIRST";
-          break;
-        case REAR_RIGHT:
-          newStatus = "SECOND";
-          break;
-        default:
-          break;
-      }
+      Boolean oldValue;
+
+      switch(mDoorId) {
+      case DRIVER:
+        oldValue = driverDoorOpen;
+        driverDoorOpen = mDoorStatus.getEvent().booleanValue();
+        if(oldValue!=driverDoorOpen){
+          if(driverDoorOpen){
+            DriverDoorOpened();
+          }
+          else{
+            DriverDoorClosed();
+          }
+        }
+
+        break;
+      case PASSENGER:
+        oldValue = passengerDoorOpen;
+        passengerDoorOpen = mDoorStatus.getEvent().booleanValue();
+        if(oldValue!=passengerDoorOpen){
+          if(passengerDoorOpen){
+            PassengerDoorOpened();
+          }
+          else{
+            PassengerDoorClosed();
+          }
+        }
+        break;
+      case REAR_LEFT:
+        oldValue = rearLeftDoorOpen;
+        rearLeftDoorOpen = mDoorStatus.getEvent().booleanValue();
+        if(oldValue!=rearLeftDoorOpen){
+          if(rearLeftDoorOpen){
+            RearLeftDoorOpened();
+          }
+          else{
+            RearLeftDoorClosed();
+          }
+        }
+        break;
+      case REAR_RIGHT:
+        oldValue = rearRightDoorOpen;
+        rearRightDoorOpen = mDoorStatus.getEvent().booleanValue();
+        if(oldValue!=rearRightDoorOpen){
+          if(rearRightDoorOpen){
+            RearRightDoorOpened();
+          }
+          else{
+            RearLeftDoorOpened();
+          }
+        }
+        break;
+      default:
+        break;
       };
-  }
+    };
+  };
 
-  */
+  
   
    /**
    * Creates a new OpenXC component
@@ -236,7 +279,7 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   }
 
   /**
-  * Return the transmission
+  * Return the transmission gear position
   */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String TransmissionGearPosition() {
@@ -250,6 +293,39 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
   public String VehicleSpeed() {
     return speed;
   }
+
+  /**
+  * Return true if the driver door is open
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean DriverDoorOpen() {
+    return driverDoorOpen;
+  }
+
+  /**
+  * Return true if the driver door is open
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean PassengerDoorOpen() {
+    return passengerDoorOpen;
+  }
+
+  /**
+  * Return true if the driver door is open
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean RearRightDoorOpen() {
+    return rearRightDoorOpen;
+  }
+
+  /**
+  * Return true if the driver door is open
+  */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean RearLeftDoorOpen() {
+    return rearLeftDoorOpen;
+  }
+  
   
   @SimpleEvent
   public void TransmissionGearPositionChanged() {
@@ -277,6 +353,85 @@ implements OnInitializeListener, OnNewIntentListener, OnPauseListener, OnResumeL
     activity.runOnUiThread(new Runnable() {
       public void run() {
         EventDispatcher.dispatchEvent(comp, "VehicleSpeedChanged");
+      }
+    });
+  }
+  
+
+  //Door Open and Close Events
+  @SimpleEvent
+  public void DriverDoorOpened() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "DriverDoorOpened");
+      }
+    });
+  }
+  
+  @SimpleEvent
+  public void DriverDoorClosed() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "DriverDoorClosed");
+      }
+    });
+  }
+
+  public void PassengerDoorOpened() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "PassengerDoorOpened");
+      }
+    });
+  }
+  
+  @SimpleEvent
+  public void PassengerDoorClosed() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "PassengerDoorClosed");
+      }
+    });
+  }
+
+    public void RearRightDoorOpened() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "RearRightDoorOpened");
+      }
+    });
+  }
+  
+  @SimpleEvent
+  public void RearRightDoorClosed() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "RearRightDoorClosed");
+      }
+    });
+  }
+
+    public void RearLeftDoorOpened() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "RearLeftDoorOpened");
+      }
+    });
+  }
+  
+  @SimpleEvent
+  public void RearLeftDoorClosed() {
+    final Component comp = this;
+    activity.runOnUiThread(new Runnable() {
+      public void run() {
+        EventDispatcher.dispatchEvent(comp, "RearLeftDoorClosed");
       }
     });
   }
