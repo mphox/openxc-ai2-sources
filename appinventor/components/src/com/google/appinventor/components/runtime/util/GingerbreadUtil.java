@@ -101,7 +101,7 @@ public class GingerbreadUtil {
       nfc.TagRead("tech discovered");
 
     } else{
-      if NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+      if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
         nfc.TagRead("tag discovered");
       }
 
